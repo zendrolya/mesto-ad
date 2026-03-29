@@ -62,6 +62,12 @@ const avatarFormModalWindow = document.querySelector(".popup_type_edit-avatar");
 const avatarForm = avatarFormModalWindow.querySelector(".popup__form");
 const avatarInput = avatarForm.querySelector(".popup__input");
 
+// Popup подтверждения удаления
+const removeCardPopup = document.querySelector(".popup_type_remove-card");
+const removeCardForm = removeCardPopup.querySelector(".popup__form");
+const submitButton = removeCardForm.querySelector(".popup__button");
+
+// Данные пользователя
 let currentUser = null;
 let cardToDelete = null;
 let cardIdToDelete = null;
@@ -128,16 +134,30 @@ const handleCardFormSubmit = (evt) => {
     });
 };
 
+const handleRemoveCardSubmit = (evt) => {
+  evt.preventDefault();
+
+  const originalText = submitButton.textContent;
+
+  deleteCardRequest(cardIdToDelete).then(() => {
+    cardToDelete.remove();
+    closeModalWindow(removeCardPopup);
+    cardToDelete = null;
+    cardIdToDelete = null;
+  });
+};
+
 const handleDeleteCard = (cardElement, cardId) => {
   cardToDelete = cardElement;
   cardIdToDelete = cardId;
-  // openModalWindow(removeCardPopup);
+  openModalWindow(removeCardPopup);
 };
 
 // EventListeners
 profileForm.addEventListener("submit", handleProfileFormSubmit);
 cardForm.addEventListener("submit", handleCardFormSubmit);
 avatarForm.addEventListener("submit", handleAvatarFromSubmit);
+removeCardForm.addEventListener("submit", handleRemoveCardSubmit);
 
 openProfileFormButton.addEventListener("click", () => {
   profileTitleInput.value = profileTitle.textContent;
