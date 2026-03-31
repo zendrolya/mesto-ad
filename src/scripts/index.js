@@ -81,6 +81,10 @@ const handlePreviewPicture = ({ name, link }) => {
 
 const handleProfileFormSubmit = (evt) => {
   evt.preventDefault();
+  const submitButton = profileForm.querySelector(".popup__button");
+  const originalText = submitButton.textContent;
+  submitButton.textContent = "Сохранение...";
+  submitButton.disabled = true;
   setUserInfo({
     name: profileTitleInput.value,
     about: profileDescriptionInput.value,
@@ -92,11 +96,19 @@ const handleProfileFormSubmit = (evt) => {
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      submitButton.textContent = originalText;
+      submitButton.disabled = false;
     });
 };
 
 const handleAvatarFromSubmit = (evt) => {
   evt.preventDefault();
+  const submitButton = avatarForm.querySelector(".popup__button");
+  const originalText = submitButton.textContent;
+  submitButton.textContent = "Сохранение...";
+  submitButton.disabled = true;
   setAvatar({
     avatar: avatarInput.value,
   })
@@ -106,11 +118,19 @@ const handleAvatarFromSubmit = (evt) => {
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      submitButton.textContent = originalText;
+      submitButton.disabled = false;
     });
 };
 
 const handleCardFormSubmit = (evt) => {
   evt.preventDefault();
+  const submitButton = cardForm.querySelector(".popup__button");
+  const originalText = submitButton.textContent;
+  submitButton.textContent = "Сохранение...";
+  submitButton.disabled = true;
   addCard({
     name: cardNameInput.value,
     link: cardLinkInput.value,
@@ -131,26 +151,47 @@ const handleCardFormSubmit = (evt) => {
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      submitButton.textContent = originalText;
+      submitButton.disabled = false;
+      closeModalWindow(cardFormModalWindow);
     });
 };
 
 const handleRemoveCardSubmit = (evt) => {
   evt.preventDefault();
 
+  const submitButton = removeCardForm.querySelector(".popup__button");
   const originalText = submitButton.textContent;
+  submitButton.textContent = "Удаление...";
+  submitButton.disabled = true;
 
-  deleteCardRequest(cardIdToDelete).then(() => {
-    cardToDelete.remove();
-    closeModalWindow(removeCardPopup);
-    cardToDelete = null;
-    cardIdToDelete = null;
-  });
+  deleteCardRequest(cardIdToDelete)
+    .then(() => {
+      cardToDelete.remove();
+      closeModalWindow(removeCardPopup);
+      cardToDelete = null;
+      cardIdToDelete = null;
+    })
+    .finally(() => {
+      submitButton.textContent = originalText;
+      submitButton.disabled = false;
+    });
 };
 
 const handleDeleteCard = (cardElement, cardId) => {
   cardToDelete = cardElement;
   cardIdToDelete = cardId;
   openModalWindow(removeCardPopup);
+};
+
+const createUsersLike = (user) => {
+  const template = document.getElementById("popup-info-user-preview-template");
+  const clone = template.content.cloneNode(true);
+  const listLikes = clone.querySelector(".popup__list-item");
+  listLikes.textContent = user.name;
+  return clone;
 };
 
 // EventListeners

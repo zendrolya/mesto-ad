@@ -1,5 +1,17 @@
-export const likeCard = (likeButton) => {
+import { changeLikeCardStatus } from "./api.js";
+
+export const likeCard = (likeButton, cardId, cardsLikes) => {
+  const isLiked = likeButton.classList.contains("card__like-button_is-active");
+
   likeButton.classList.toggle("card__like-button_is-active");
+
+  changeLikeCardStatus(cardId, isLiked)
+    .then((data) => {
+      cardsLikes.textContent = data.likes.length;
+    })
+    .catch(() => {
+      likeButton.classList.toggle("card__like-button_is-active");
+    });
 };
 
 export const deleteCard = (cardElement) => {
@@ -23,14 +35,27 @@ export const createCardElement = (
   const deleteButton = cardElement.querySelector(
     ".card__control-button_type_delete",
   );
+  const cardsLikes = cardElement.querySelector(".card__like-count");
   const cardImage = cardElement.querySelector(".card__image");
 
   cardImage.src = data.link;
   cardImage.alt = data.name;
   cardElement.querySelector(".card__title").textContent = data.name;
 
+  const likesArray = data.likes || [];
+
+  const wasLike = likesArray.some((user) => user._id === userId);
+
+  if (wasLike) {
+    likeButton.classList.add("card__like-button_is-active");
+  }
+
+  cardsLikes.textContent = data.likes ? data.likes.length : 0;
+
   if (onLikeIcon) {
-    likeButton.addEventListener("click", () => onLikeIcon(likeButton));
+    likeButton.addEventListener("click", () =>
+      onLikeIcon(likeButton, data._id, cardsLikes),
+    );
   }
 
   if (userId && data.owner && userId === data.owner._id) {
