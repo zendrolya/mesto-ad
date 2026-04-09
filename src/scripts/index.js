@@ -67,6 +67,13 @@ const removeCardPopup = document.querySelector(".popup_type_remove-card");
 const removeCardForm = removeCardPopup.querySelector(".popup__form");
 const submitButton = removeCardForm.querySelector(".popup__button");
 
+// Popup информации о карточке
+const cardInfoModalWindow = document.querySelector(".popup_type_info");
+const cardInfoModalTitle = cardInfoModalWindow.querySelector(".popup__title");
+const cardInfoModalInfoList = cardInfoModalWindow.querySelector(".popup__info");
+const cardInfoModalText = cardInfoModalWindow.querySelector(".popup__text");
+const cardInfoModalList = cardInfoModalWindow.querySelector(".popup__list");
+
 // Данные пользователя
 let currentUser = null;
 let cardToDelete = null;
@@ -143,6 +150,7 @@ const handleCardFormSubmit = (evt) => {
             onPreviewPicture: handlePreviewPicture,
             onLikeIcon: likeCard,
             onDeleteCard: handleDeleteCard,
+            onInfoIcon: handleInfoClick,
           },
           currentUser._id,
         ),
@@ -186,12 +194,77 @@ const handleDeleteCard = (cardElement, cardId) => {
   openModalWindow(removeCardPopup);
 };
 
-const createUsersLike = (user) => {
-  const template = document.getElementById("popup-info-user-preview-template");
-  const clone = template.content.cloneNode(true);
-  const listLikes = clone.querySelector(".popup__list-item");
-  listLikes.textContent = user.name;
-  return clone;
+const formatDate = (date) =>
+  date.toLocaleDateString("ru-RU", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+const createInfoString = (term, description) => {
+  const template = document.getElementById("popup-info-definition-template");
+  const infoItem = template.content.cloneNode(true);
+  infoItem.querySelector(".popup__info-term").textContent = term;
+  infoItem.querySelector(".popup__info-description").textContent = description;
+  return infoItem;
+};
+
+const handleInfoClick = (cardId) => {
+  getCardList()
+    .then((cards) => {
+      const cardData = cards.find((card) => card._id === cardId);
+      if (!cardData) return;
+
+      cardInfoModalTitle.textContent = "";
+      cardInfoModalInfoList.innerHTML = "";
+      cardInfoModalText.textContent = "";
+      cardInfoModalList.innerHTML = "";
+
+      cardInfoModalTitle.textContent = "Информация о карточке";
+
+      cardInfoModalInfoList.append(
+        createInfoString("Описание:", cardData.name),
+      );
+
+      cardInfoModalInfoList.append(
+        createInfoString(
+          "Дата создания:",
+          formatDate(new Date(cardData.createdAt)),
+        ),
+      );
+
+      cardInfoModalInfoList.append(
+        createInfoString("Владелец:", cardData.owner.name),
+      );
+
+      cardInfoModalInfoList.append(
+        createInfoString(
+          "Количество лайков:",
+          cardData.likes.length.toString(),
+        ),
+      );
+
+      cardInfoModalText.textContent = "Лайкнули:";
+
+      if (cardData.likes.length > 0) {
+        cardData.likes.forEach((user) => {
+          const template = document.getElementById(
+            "popup-info-user-preview-template",
+          );
+          const listItem = template.content.cloneNode(true);
+          const badge = listItem.querySelector(".popup__list-item_type_badge");
+
+          badge.textContent = user.name || "Аноним";
+
+          cardInfoModalList.appendChild(listItem);
+        });
+      }
+
+      openModalWindow(cardInfoModalWindow);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 // EventListeners
@@ -237,6 +310,7 @@ Promise.all([getCardList(), getUserInfo()])
             onPreviewPicture: handlePreviewPicture,
             onLikeIcon: likeCard,
             onDeleteCard: handleDeleteCard,
+            onInfoIcon: handleInfoClick,
           },
           userData._id,
         ),
