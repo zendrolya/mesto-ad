@@ -166,7 +166,7 @@ const handleCardFormSubmit = (evt) => {
           currentUser._id,
         ),
       );
-      closeModalWindow(profileFormModalWindow);
+      closeModalWindow(cardFormModalWindow);
     })
     .catch((err) => {
       console.log(err);
