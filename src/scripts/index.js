@@ -72,7 +72,7 @@ const cardInfoSubtitle = cardInfoModal.querySelector(".popup__text");
 const cardInfoInfoList = cardInfoModal.querySelector(".popup__info");
 const cardInfoUserList = cardInfoModal.querySelector(".popup__list");
 
-const cardLogo = document.querySelector(".logo");
+const logoElement = document.querySelector(".logo");
 
 // Данные пользователя
 let currentUser = null;
@@ -99,6 +99,7 @@ const handlePreviewPicture = ({ name, link }) => {
 
 const handleProfileFormSubmit = (evt) => {
   evt.preventDefault();
+
   const submitButton = profileForm.querySelector(".popup__button");
 
   renderLoading(submitButton, true);
@@ -120,7 +121,7 @@ const handleProfileFormSubmit = (evt) => {
     });
 };
 
-const handleAvatarFromSubmit = (evt) => {
+const handleAvatarFormSubmit = (evt) => {
   evt.preventDefault();
   const submitButton = avatarForm.querySelector(".popup__button");
 
@@ -131,7 +132,7 @@ const handleAvatarFromSubmit = (evt) => {
   })
     .then((userData) => {
       profileAvatar.style.backgroundImage = `url(${userData.avatar})`;
-      closeModalWindow(profileFormModalWindow);
+      closeModalWindow(avatarFormModalWindow);
     })
     .catch((err) => {
       console.log(err);
@@ -143,6 +144,7 @@ const handleAvatarFromSubmit = (evt) => {
 
 const handleCardFormSubmit = (evt) => {
   evt.preventDefault();
+
   const submitButton = cardForm.querySelector(".popup__button");
 
   renderLoading(submitButton, true, "Создание...");
@@ -171,7 +173,6 @@ const handleCardFormSubmit = (evt) => {
     })
     .finally(() => {
       renderLoading(submitButton, false);
-      closeModalWindow(cardFormModalWindow);
     });
 };
 
@@ -189,6 +190,7 @@ const handleRemoveCardSubmit = (evt) => {
       cardToDelete = null;
       cardIdToDelete = null;
     })
+    .catch((err) => console.log(err))
     .finally(() => {
       renderLoading(submitButton, false);
     });
@@ -292,7 +294,7 @@ const handleStatsClick = () => {
 
       const popularCards = [...cards]
         .sort((a, b) => b.likes.length - a.likes.length)
-        .slice(0, 5);
+        .slice(0, 3);
 
       popularCards.forEach((card) => {
         cardInfoUserList.append(createUsersLike({ name: card.name }));
@@ -300,29 +302,33 @@ const handleStatsClick = () => {
 
       openModalWindow(cardInfoModal);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.error(err));
 };
 
 // EventListeners
 profileForm.addEventListener("submit", handleProfileFormSubmit);
 cardForm.addEventListener("submit", handleCardFormSubmit);
-avatarForm.addEventListener("submit", handleAvatarFromSubmit);
+avatarForm.addEventListener("submit", handleAvatarFormSubmit);
 removeCardForm.addEventListener("submit", handleRemoveCardSubmit);
-cardLogo.addEventListener("click", handleStatsClick);
+logoElement.addEventListener("click", handleStatsClick);
 
 openProfileFormButton.addEventListener("click", () => {
   profileTitleInput.value = profileTitle.textContent;
   profileDescriptionInput.value = profileDescription.textContent;
+
+  clearValidation(profileForm, validationSettings);
   openModalWindow(profileFormModalWindow);
 });
 
 profileAvatar.addEventListener("click", () => {
   avatarForm.reset();
+  clearValidation(avatarForm, validationSettings);
   openModalWindow(avatarFormModalWindow);
 });
 
 openCardFormButton.addEventListener("click", () => {
   cardForm.reset();
+  clearValidation(cardForm, validationSettings);
   openModalWindow(cardFormModalWindow);
 });
 
@@ -354,4 +360,4 @@ Promise.all([getCardList(), getUserInfo()])
       );
     });
   })
-  .catch((err) => console.log(err));
+  .catch((err) => console.error(err));
