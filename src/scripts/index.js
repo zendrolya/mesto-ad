@@ -161,7 +161,6 @@ const handleCardFormSubmit = (evt) => {
             onPreviewPicture: handlePreviewPicture,
             onLikeIcon: likeCard,
             onDeleteCard: handleDeleteCard,
-            onInfoIcon: handleInfoClick,
           },
           currentUser._id,
         ),
@@ -223,40 +222,6 @@ const createInfoDefinition = (label, value) => {
   clone.querySelector(".popup__info-term").textContent = label;
   clone.querySelector(".popup__info-description").textContent = value;
   return clone;
-};
-
-const handleInfoClick = (cardId) => {
-  cardInfoInfoList.textContent = "";
-  cardInfoUserList.textContent = "";
-
-  getCardList().then((cards) => {
-    const cardData = cards.find((card) => card._id === cardId);
-    if (!cardData) return;
-
-    cardInfoSubtitle.textContent = "Лайкнули:";
-    cardInfoTitle.textContent = "Информация о карточке";
-
-    cardInfoInfoList.append(createInfoDefinition("Описание:", cardData.name));
-
-    const creationDate = formatDate(new Date(cardData.createdAt));
-    cardInfoInfoList.append(
-      createInfoDefinition("Дата создания:", creationDate),
-    );
-
-    cardInfoInfoList.append(
-      createInfoDefinition("Владелец карточки:", cardData.owner.name),
-    );
-
-    cardInfoInfoList.append(
-      createInfoDefinition("Количество лайков:", cardData.likes.length),
-    );
-
-    cardData.likes.forEach((user) => {
-      cardInfoUserList.append(createUsersLike(user));
-    });
-
-    openModalWindow(cardInfoModal);
-  });
 };
 
 const handleStatsClick = () => {
@@ -353,7 +318,6 @@ Promise.all([getCardList(), getUserInfo()])
             onPreviewPicture: handlePreviewPicture,
             onLikeIcon: likeCard,
             onDeleteCard: handleDeleteCard,
-            onInfoIcon: handleInfoClick,
           },
           userData._id,
         ),
