@@ -201,13 +201,6 @@ const handleDeleteCard = (cardElement, cardId) => {
   openModalWindow(removeCardPopup);
 };
 
-const formatDate = (date) =>
-  date.toLocaleDateString("ru-RU", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
 const createUsersLike = (user) => {
   const template = document.getElementById("popup-info-user-preview-template");
   const clone = template.content.cloneNode(true);
