@@ -3,15 +3,18 @@ import { changeLikeCardStatus } from "./api.js";
 export const likeCard = (likeButton, cardId, cardsLikes) => {
   const isLiked = likeButton.classList.contains("card__like-button_is-active");
 
-  likeButton.classList.toggle("card__like-button_is-active");
-
   changeLikeCardStatus(cardId, isLiked)
     .then((data) => {
+      likeButton.classList.toggle("card__like-button_is-active");
       cardsLikes.textContent = data.likes.length;
     })
-    .catch(() => {
-      likeButton.classList.toggle("card__like-button_is-active");
+    .catch((err) => {
+      console.log(err);
     });
+};
+
+export const deleteCard = (cardElement) => {
+  cardElement.remove();
 };
 
 const getTemplate = () => {
